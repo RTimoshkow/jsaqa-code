@@ -3,6 +3,10 @@ const jestConfig = require("./jest.config");
 
 let page;
 
+beforeEach(async () => {
+  page = await browser.newPage();
+}, 60000);
+
 afterEach(() => {
   page.close();
 });
@@ -10,7 +14,6 @@ afterEach(() => {
 describe("Github team page tests", () => {
   
   beforeEach(async () => {
-    page = await browser.newPage();
     await page.goto("https://github.com/team");
   }, 15000);
 
@@ -40,7 +43,6 @@ describe("Github team page tests", () => {
 describe("Github start page tests", () => {
 
   beforeEach(async () => {
-    page = await browser.newPage();
     await page.goto("https://github.com/");
   }, 15000);
 
@@ -73,31 +75,12 @@ describe("Github start page tests", () => {
     expect(actual).toEqual('nav-search-input');
 
   }, 60000);
-
-/*
-Почему не работает???
-  test("Content of the h1 attribute", async () => {
-    const h1Atrtribute = "f2-mktg col-md-7";
-    const actual = await page.$eval(h1Atrtribute, link => link.textContent);
-    expect(actual).toContain(`
-    \tLet's build from here,
-    \t    openly
-    \t    instantly
-    \t    automatically
-    \t    securely
-    \t    magically
-    \t    collaboratively
-    \t    together.
-          `);
-  }, 90000);
-  */
 });
 
 
 describe("Netology test", () => {
 
   beforeEach(async () => {
-    page = await browser.newPage();
     await page.goto("https://netology.ru/");
   }, 60000);
 
@@ -111,7 +94,7 @@ describe("Netology test", () => {
   }, 60000);
 
   test("Attribute content", async () => {
-    const atribute = '.src-shared-containers-SupportIcon--root--qCDah';
+    const atribute = '.src-reallyShared-containers-SupportIcon--root--CWlV_';
     const actual = await page.$eval(atribute, link => link.getAttribute('data-testid'));
     expect(actual).toEqual('ticketsystem-icon');
   });
@@ -122,4 +105,37 @@ describe("Netology test", () => {
     const title2 = await page.title();
     expect(title2).toEqual('Нетология — обучение современным профессиям онлайн');
   }, 60000);
+});
+
+describe.only("tests in which there are questions", () => {
+
+  beforeEach(async () => {
+    await page.goto("https://github.com/");
+  }, 15000);
+
+  test.skip("attribute search", async () => {
+    const button = "a.HeaderMenu-link.HeaderMenu-link--sign-up";
+    await page.click(button);
+    const emailButton = '[data-optimizely-event="click.signup_continue.email"]';
+    await page.waitForSelector(emailButton, {
+      visible: true,
+    });
+    const actual = await page.$eval(emailButton, link => link.getAttribute('disabled'));
+    expect(actual).toEqual('');
+  });
+
+  test("Content of the h1 attribute", async () => {
+    const h1Atrtribute = "div > div > div.col-12.col-lg-7.text-center.text-md-left > h1";
+    const actual = await page.$eval(h1Atrtribute, link => link.textContent);
+    expect(actual).toContain(`
+    \tLet's build from here,
+    \t    openly
+    \t    instantly
+    \t    automatically
+    \t    securely
+    \t    magically
+    \t    collaboratively
+    \t    together.
+          `);
+  }, 90000);
 });
